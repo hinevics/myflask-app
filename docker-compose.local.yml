@@ -1,0 +1,124 @@
+version: '2'
+
+services:
+  db:
+    image: "mdillon/postgis"
+    container_name: b2c_db_${B2C_VERSION}
+    environment:
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - POSTGRES_DB
+      - PGDATA=/var/lib/postgresql/pgdata
+    volumes:
+      - ${PROJECT_ROOT}/data/db_data:/var/lib/postgresql/pgdata:rw
+    ports:
+      - "8002:5432"
+  redis:
+    image: 'bitnami/redis:latest'
+    container_name: b2c_db_redis
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+    ports:
+      - "8003:6379"
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.9.1
+    container_name: b2c_elasticsearch_${B2C_VERSION}
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    volumes:
+      - esdata:/usr/share/elasticsearch/data
+    ports:
+      - "8004:9200"
+  web:
+    image: b2cbelarus/b2c-backend:${B2C_VERSION}
+    container_name: b2c_web_${B2C_VERSION}
+    build: ./backend
+    environment:
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - POSTGRES_DB
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - DJANGO_DEBUG
+      - DJANGO_SECRET_KEY
+      - DJANGO_SECURE
+      - DJANGO_SENTRY_DSN
+      - SENTRY_ENVIRONMENT
+      - EMAIL_HOST
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_PORT
+      - EMAIL_USE_TLS
+      - DEFAULT_FROM_EMAIL
+    volumes:
+      - ${PROJECT_ROOT}/media:/app/media
+      - ${PROJECT_ROOT}/static:/app/static
+    ports:
+      - "8000:8000"
+    command: >
+      sh -c "python manage.py migrate
+      && python manage.py collectstatic --noinput
+      && python manage.py runserver 0.0.0.0:8000"
+  celery:
+    image: b2cbelarus/b2c-backend:${B2C_VERSION}
+    container_name: b2c_celery_${B2C_VERSION}
+    build: ./backend
+    environment:
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - POSTGRES_DB
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - DJANGO_DEBUG
+      - DJANGO_SECRET_KEY
+      - DJANGO_SECURE
+      - DJANGO_SENTRY_DSN
+      - SENTRY_ENVIRONMENT
+      - EMAIL_HOST
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_PORT
+      - EMAIL_USE_TLS
+      - DEFAULT_FROM_EMAIL
+    volumes:
+      - ${PROJECT_ROOT}/media:/app/media
+      - ${PROJECT_ROOT}/static:/app/static
+    command: celery -A main worker -c 1 -l info
+  celery_beat:
+    image: b2cbelarus/b2c-backend:${B2C_VERSION}
+    container_name: b2c_celery_beat_${B2C_VERSION}
+    build: ./backend
+    environment:
+      - REDIS_HOST
+      - REDIS_PORT
+      - REDIS_DB
+      - POSTGRES_DB
+      - POSTGRES_HOST
+      - POSTGRES_PORT
+      - POSTGRES_USER
+      - POSTGRES_PASSWORD
+      - DJANGO_DEBUG
+      - DJANGO_SECRET_KEY
+      - DJANGO_SECURE
+      - DJANGO_SENTRY_DSN
+      - SENTRY_ENVIRONMENT
+      - EMAIL_HOST
+      - EMAIL_HOST_USER
+      - EMAIL_HOST_PASSWORD
+      - EMAIL_PORT
+      - EMAIL_USE_TLS
+      - DEFAULT_FROM_EMAIL
+    volumes:
+      - ${PROJECT_ROOT}/media:/app/media
+      - ${PROJECT_ROOT}/static:/app/static
+    command: celery -A main beat -c 1 -l info
+
+volumes:
+  esdata: {}
