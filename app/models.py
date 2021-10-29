@@ -1,13 +1,13 @@
-from app import db
+# from app import db
 
 
-class User(db.Document):
-    name = db.StringField()
-    text = db.StringField()
+# class User(db.Document):
+#     author = db.StringField()
+#     text = db.StringField()
     
     
-    def to_json(self):
-        return {
-            'name': self.name,
-            'text': self.email
-        }
+#     def to_json(self):
+#         return {
+#             'author': self.author,
+#             'text': self.text
+#         }

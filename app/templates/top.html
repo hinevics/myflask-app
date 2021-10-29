@@ -5,7 +5,11 @@
         <title>Greetings</title>
     </head>
     <body>
+        <a href="{{ url_for('start') }}">start page</a>
+        <a href="{{ url_for('distribution') }}">distribution page</a>
         <h1>TOP PAGE</h1>
-        <img src={{url}} alt="Chart" height="auto" width="100%">
+        {% for m in vartest %}
+        <div>{{ m }}</div>
+        {% endfor %}
     </body>
 </html>

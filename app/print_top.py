@@ -1,13 +1,27 @@
-import matplotlib.pyplot as plt
+import plotly
+import plotly.graph_objs as go
+import pandas as pd
+import numpy as np
+
+import json
 import random
 
-X = [random.random() for i in range(50)]
-Y = [i**2 for i in X]
+def create_plot():
 
-def top_plot():    
-    fig, ax = plt.subplots( nrows=1, ncols=1 )  # create figure & 1 axis
-    ax.plot(X, Y)
-    fig.savefig(r'\static\images')   # save the figure to file
-    plt.close(fig)  
 
-top_plot()
+    N = 40
+    x = np.linspace(0, 1, N)
+    y = np.random.rand(N)
+    df = pd.DataFrame({'x': x, 'y': y}) # creating a sample dataframe
+
+
+    data = [
+        go.Bar(
+            x=df['x'], # assign x as the dataframe column 'x'
+            y=df['y']
+        )
+    ]
+
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    return graphJSON
