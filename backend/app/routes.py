@@ -1,12 +1,18 @@
-from flask import render_template, redirect, url_for, request
+import json
 
-from app import server
-# from app.models import User
+from flask import render_template, redirect, url_for, request
+from bson import json_util
+
+import app.config as config
+from app import server, db
 from app.print_top import create_plot
 
 @server.route('/', methods=['GET'])
 def start():
-    return render_template('index.html')
+    collection = db[config.MONGO_DATABASE][config.MONGO_COLLECTION]
+    a = collection.find({})
+    # return render_template('index.html')
+    return json.dumps(a, default=json_util.default)
 
 @server.route('/top')
 def top():
