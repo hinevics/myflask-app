@@ -1,13 +1,11 @@
 from flask import render_template, redirect, url_for, request
 
 from app import server
-from app.models import User
+# from app.models import User
 from app.print_top import create_plot
-from app.datageneration import generation
 
 @server.route('/', methods=['GET'])
 def start():
-    generation()
     return render_template('index.html')
 
 @server.route('/top')
