@@ -3,17 +3,18 @@ import json
 from flask import render_template, redirect, url_for, request
 from bson import json_util
 
-import app.config as config
-from app import server
-from app.models import User
+from  app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
+from app import server, collections
 from app.print_top import create_plot
+
 
 @server.route('/', methods=['GET'])
 def start():
-    user = User.objects(author='Саша').first()
-    # return render_template('index.html')
-    return user
-    # return json.dumps(a, default=json_util.default)
+    
+    # # return render_template('index.html')
+    # # return user
+    all_r = list(collections.find({}))
+    return json.dumps(all_r, default=json_util.default)
 
 @server.route('/top')
 def top():
