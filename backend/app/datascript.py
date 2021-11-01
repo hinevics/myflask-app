@@ -22,7 +22,8 @@ def dbstart():
     db = client[config.MONGO_DATABASE]
     series_collection = db[config.MONGO_COLLECTION]
 
-    data = [i for i in generation(config.MONGO_NUMBER)]
+    # data = [i for i in generation(config.MONGO_NUMBER)]
+    data = [{'author': 'Саша', 'text':'yes'}]
 
     series_collection.insert_many(data)
     print('end create db')
