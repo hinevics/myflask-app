@@ -5,6 +5,7 @@ from pymongo import MongoClient
 import app.config as config
 
 def name_generator():
+    names = [requests.get(url=config.API_NAME).json()['name'] for i in range(config.MONGO_NUMBER_AUTHOR)]
     return requests.get(url=config.API_NAME).json()['name']
 
 
