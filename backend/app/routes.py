@@ -4,21 +4,24 @@ from flask import render_template, redirect, url_for, request
 from bson import json_util
 
 from  app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
-from app import server, collections
-from app.print_top import create_plot
+from app import server, db_collections
+from app.authors import authors_get_top
+from app.distribution_authors import create_plot
 
-
-@server.route('/', methods=['GET'])
+@server.route('/')
 def start():
-    
-    # # return render_template('index.html')
-    # # return user
-    all_r = list(collections.find({}))
-    return json.dumps(all_r, default=json_util.default)
+    return render_template('index.html')
 
-@server.route('/top')
-def top():
-    return render_template('top.html', vartest=[f'Топовый автор #{i}' for i in range(10)])
+
+@server.route("/get_top", methods=['GET'])
+def get_top():
+    return json.dumps(authors_get_top(),default=json_util)
+
+
+@server.route('/render_top', methods=['GET'])
+def render_top():
+    top_authors = json.loads(s=get_top())
+    return render_template('top.html', vartest=[f'Top number #{i[0] + 1}: {i[1]["author"]}' for i in enumerate(top_authors)])
 
 
 @server.route('/distribution')
