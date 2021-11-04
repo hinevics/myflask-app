@@ -1,9 +1,10 @@
 import requests
 import random
+import datetime
 
 from pymongo import MongoClient
 
-from app.config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE,\
+from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE,\
 MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
 
 
@@ -32,6 +33,20 @@ def text_generator(api_text:str):
     """
     return requests.get(url=api_text).json()['text']
 
+def date_generator(number_page:int) -> list:
+    """[summary]
+
+    Args:
+        number_page (int): [description]
+
+    Returns:
+        list: [description]
+    """
+    # datetime.date.today() - datetime.timedelta(DEFAULT_TIMEDELTA)
+
+    result = [datetime.date.today()-datetime.timedelta(random.randint(a=1, b=i+2)) for i in range(number_page)]
+    return result
+
 
 def generation(number_author:int, number_page:int, api_name:str, api_text:str) -> dict:
     """[summary]
@@ -49,7 +64,7 @@ def generation(number_author:int, number_page:int, api_name:str, api_text:str) -
         Iterator[dict]: [description]
     """
     names = name_generator(number_author=number_author, api_name=api_name)
-    
+    date = datetime.time()
     for i in range(number_page):
         name = names[random.randint(a=0, b=number_author-1)]
         yield dict(author=name, text=text_generator(api_text=api_text))
@@ -71,15 +86,16 @@ def db_start():
 
 
 def main():
-    from collections import Counter
+    # from collections import Counter
 
-    db_start()
-    a = input()
-    client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
-    db = client[MONGO_DATABASE]
-    series_collection = db[MONGO_COLLECTION]
-    authors = [i['author'] for i in list(series_collection.find({}, {'author': True, '_id':False}))]
-    print([(element, count) for element, count in Counter(authors).most_common()])
+    # db_start()
+    # a = input('Start test')
+    # client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
+    # db = client[MONGO_DATABASE]
+    # series_collection = db[MONGO_COLLECTION]
+    # authors = [i['author'] for i in list(series_collection.find({}, {'author': True, '_id':False}))]
+    # print([(element, count) for element, count in Counter(authors).most_common()])
+    print(date_generator(number_page=MONGO_NUMBER_PAGE))
 
 if __name__ == '__main__':
     main()
