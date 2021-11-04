@@ -15,7 +15,7 @@ def start():
 
 @server.route("/get_top", methods=['GET'])
 def get_top():
-    return json.dumps(authors_get_top(),default=json_util)
+    return json.dumps(authors_get_top(), default=json_util)
 
 
 @server.route('/render_top', methods=['GET'])
