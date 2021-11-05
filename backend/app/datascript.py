@@ -2,10 +2,11 @@ import json
 import requests
 import random
 import datetime
+import time
 
 from pymongo import MongoClient
 
-from app.config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE,\
+from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE,\
 MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
 
 
@@ -45,7 +46,9 @@ def date_generator(number_page:int) -> list:
     """
     # datetime.date.today() - datetime.timedelta(DEFAULT_TIMEDELTA)
 
-    result = [(datetime.date.today()-datetime.timedelta(random.randint(a=1, b=i+2))).isoformat() for i in range(number_page)]
+    result = [int(time.mktime((datetime.datetime.today()-datetime.timedelta(random.randint(a=1, b=i+2))).timetuple()))
+              for i in range(number_page)]
+
     return result
 
 
@@ -88,6 +91,7 @@ def db_start():
 
 
 def main():
+    
     from collections import Counter
 
     db_start()
@@ -95,9 +99,10 @@ def main():
     client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
     db = client[MONGO_DATABASE]
     series_collection = db[MONGO_COLLECTION]
-    print(list(series_collection.find({})))
-    # authors = [i['author'] for i in list(series_collection.find({}, {'author': True, '_id':False}))]
-    # print([(element, count) for element, count in Counter(authors).most_common()])
-    # print(date_generator(number_page=MONGO_NUMBER_PAGE))
+    date_id = list(series_collection.find({}, {'_id':True, 'datecreate':True}))
+    a = sorted(date_id, key=lambda x: x['datecreate'])
+    print(a)
+    print(int(time.mktime((datetime.datetime.today() - datetime.timedelta(24)).timetuple())))
+    
 if __name__ == '__main__':
     main()
