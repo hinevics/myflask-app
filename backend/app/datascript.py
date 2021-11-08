@@ -6,7 +6,7 @@ import time
 
 from pymongo import MongoClient
 
-from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE,\
+from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE, MONGO_NUMBER_DAY,\
 MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
 
 
@@ -46,7 +46,7 @@ def date_generator(number_page:int) -> list:
     """
     # datetime.date.today() - datetime.timedelta(DEFAULT_TIMEDELTA)
 
-    result = [int(time.mktime((datetime.datetime.today()-datetime.timedelta(random.randint(a=1, b=i+2))).timetuple()))
+    result = [int(time.mktime((datetime.datetime.today()-datetime.timedelta(random.randint(a=1, b=i*2+1))).timetuple()))
               for i in range(number_page)]
 
     return result
@@ -99,10 +99,10 @@ def main():
     client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
     db = client[MONGO_DATABASE]
     series_collection = db[MONGO_COLLECTION]
-    date_id = list(series_collection.find({}, {'_id':True, 'datecreate':True}))
-    a = sorted(date_id, key=lambda x: x['datecreate'])
-    print(a)
-    print(int(time.mktime((datetime.datetime.today() - datetime.timedelta(24)).timetuple())))
+    data = list(series_collection.find({}, {'author':True, 'datecreate':True}))
+    delta_today = int(time.mktime((datetime.datetime.today() - datetime.timedelta(days=MONGO_NUMBER_DAY*30)).timetuple()))
+    result = [i['author'] for i in data if i['datecreate'] > delta_today]
+    print(Counter(result))
     
 if __name__ == '__main__':
     main()
