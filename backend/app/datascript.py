@@ -6,7 +6,7 @@ import time
 
 from pymongo import MongoClient
 
-from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE, MONGO_NUMBER_DAY,\
+from app.config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE, MONGO_NUMBER_DAY,\
 MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
 
 
@@ -46,7 +46,8 @@ def date_generator(number_page:int) -> list:
     """
     # datetime.date.today() - datetime.timedelta(DEFAULT_TIMEDELTA)
 
-    result = [int(time.mktime((datetime.datetime.today()-datetime.timedelta(random.randint(a=1, b=i*2+1))).timetuple()))
+    result = [int(time.mktime((datetime.datetime.today()
+                               -datetime.timedelta(days=random.randint(a=1, b=i+1)*random.randint(a=1, b=i+1))).timetuple()))
               for i in range(number_page)]
 
     return result
@@ -88,21 +89,16 @@ def db_start():
             generation(number_author=MONGO_NUMBER_AUTHOR, number_page=MONGO_NUMBER_PAGE, api_name=API_NAME, api_text=API_FISH_TEXT)]
     series_collection.insert_many(data)
     print('end create db')
-
+    
+def create_utc(unixdatetime):
+        """
+            Converts unix date to utc and returns as a string
+        """
+        utcdatetime = time.localtime(unixdatetime)
+        # There are different time formats: UTC, unix, GMT
+        return '{d}.{m}.{Y}'.format(d=utcdatetime.tm_mday, m=utcdatetime.tm_mon, Y=utcdatetime.tm_year)
 
 def main():
-    
-    from collections import Counter
-
-    db_start()
-    input('Start test')
-    client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
-    db = client[MONGO_DATABASE]
-    series_collection = db[MONGO_COLLECTION]
-    data = list(series_collection.find({}, {'author':True, 'datecreate':True}))
-    delta_today = int(time.mktime((datetime.datetime.today() - datetime.timedelta(days=MONGO_NUMBER_DAY*30)).timetuple()))
-    result = [i['author'] for i in data if i['datecreate'] > delta_today]
-    print(Counter(result))
-    
+    pass
 if __name__ == '__main__':
     main()
