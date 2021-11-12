@@ -1,11 +1,8 @@
-import json
+from flask import render_template
 
-from flask import render_template, redirect, url_for, request
-
-from  app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
-from app import server, db_collections
-from app.authors import authors_get_top
-from app.distribution_authors import get_distribution_authors
+# from  app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
+from app import server
+from app.authors import authors_get_top, top_authors_render, get_distribution_authors
 
 
 @server.route('/')
@@ -21,10 +18,8 @@ def get_top():
 
 @server.route('/top', methods=['GET'])
 def render_top():
-# возможность выбирать какой топ хочу... 
-    top_authors = json.loads(s=authors_get_top())
-    # логику выносить отдельным модулем!
-    return render_template('top.html', vartest=[f'Top number #{i[0] + 1}: {i[1]["author"]}, {i[1]["count"]}' for i in enumerate(top_authors)])
+    result = top_authors_render()
+    return render_template('top.html', vartest=result)
 
 
 @server.route('/api/v1/authors/distribution', methods=['GET'])  # !!!!
