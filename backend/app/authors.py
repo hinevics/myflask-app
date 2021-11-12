@@ -25,11 +25,13 @@ def top_authors() -> list:
 
 
 def authors_get_top():
-    return json.dumps(top_authors(), default=json_util)
+    list_top_authors = top_authors()
+    return json.dumps(list_top_authors, default=json_util)
 
 
 def top_authors_render():
-    result = [f'Top number #{i[0] + 1}: {i[1]["author"]}' for i in enumerate(top_authors(top_authors()))]
+    list_top_authors = top_authors()
+    result = [f'Top number #{i[0] + 1}: {i[1]["author"]}' for i in enumerate(list_top_authors)]
     return result
 
 

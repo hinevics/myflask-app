@@ -1,5 +1,4 @@
-from flask import Flask, app
-from flask_mongoengine import MongoEngine
+from flask import Flask
 
 from pymongo import MongoClient
 
@@ -16,6 +15,8 @@ cluster = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
 db = cluster[MONGO_DATABASE]
 db_collections = db[MONGO_COLLECTION]
 
-from app import authors, config, datascript, distribution_authors, models, routes
+
+from app import authors, config, datascript, models, routes
+
 
 server.run()
