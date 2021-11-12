@@ -18,18 +18,19 @@ def top_authors() -> list:
         list: [description]
     """
     authors = [i['author'] for i in list(db_collections.find({}, {'author': True, '_id': False}))]
-    result = json.dumps([
+    result = [
         {'author': element, 'count': count} for element, count in Counter(authors).most_common()
-        ], default=json_util)
+        ]
     return result
 
 
-def get_top():
-    pass
+def authors_get_top():
+    return json.dumps(top_authors(), default=json_util)
 
 
 def top_authors_render():
-    [f'Top number #{i[0] + 1}: {i[1]["author"]}' for i in enumerate(top_authors)]
+    result = [f'Top number #{i[0] + 1}: {i[1]["author"]}' for i in enumerate(top_authors(top_authors()))]
+    return result
 
 
 def get_distribution_authors():

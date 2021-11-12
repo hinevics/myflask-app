@@ -10,19 +10,17 @@ def start():
     return render_template('index.html')
 
 
-@server.route("/api/v1/authors/top", methods=['GET'])  # !!!!!!!!!!!!!!!!!
+@server.route("/api/v1/authors/top", methods=['GET'])
 def get_top():
-    # добавить описание что мол как получить json
-    return authors_get_top()  # как делают!
+    return authors_get_top()
 
 
 @server.route('/top', methods=['GET'])
 def render_top():
-    result = top_authors_render()
-    return render_template('top.html', vartest=result)
+    return render_template('top.html', vartest=top_authors_render())
 
 
-@server.route('/api/v1/authors/distribution', methods=['GET'])  # !!!!
+@server.route('/api/v1/authors/distribution', methods=['GET'])
 def get_distribution():
     return get_distribution_authors()
 
