@@ -5,7 +5,7 @@ from pymongo import MongoClient
 
 from app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
 from app.datascript import db_start
-
+# mongod.exe
 db_start()
 
 print('start create flask app')

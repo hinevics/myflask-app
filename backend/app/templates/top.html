@@ -5,9 +5,9 @@
         <title>Greetings</title>
     </head>
     <body>
-        <a href="{{ url_for('start') }}">start page</a>
-        <a href="{{ url_for('distribution') }}">distribution page</a>
         <h1>TOP PAGE</h1>
+        <a href="{{ url_for('start') }}"><-back</a>
+        <a href="{{ url_for('get_top') }}">get json</a>
         {% for m in vartest %}
         <div>{{ m }}</div>
         {% endfor %}
