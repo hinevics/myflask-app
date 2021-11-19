@@ -5,8 +5,8 @@ from collections import Counter
 from bson import json_util
 import json
 
-from app import db_collections
-from app.config import MONGO_NUMBER_DAY
+from src import db_collections
+from src.config import MONGO_NUMBER_DAY
 # import pandas as pd
 # import numpy as np
 

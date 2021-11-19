@@ -1,8 +1,8 @@
 from flask import render_template
 
 # from  app.config import MONGO_COLLECTION, MONGO_DATABASE, MONGO_HOST, MONGO_PORT
-from app import server
-from app.authors import authors_get_top, top_authors_render, get_distribution_authors
+from src import server
+from src.authors import authors_get_top, top_authors_render, get_distribution_authors
 
 
 @server.route('/')

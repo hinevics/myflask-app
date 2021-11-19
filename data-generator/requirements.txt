@@ -1,9 +1,6 @@
-flask
-flask-cors
 gevent
 gunicorn
 mistune
 pymongo
-rq
 requests
 python-dotenv

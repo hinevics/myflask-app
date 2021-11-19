@@ -1,20 +1,21 @@
 services:
+  mongodb:
+    image: "mongo"
+    container_name: "mongodb"
+    restart: "always"
+    ports:
+      - "27017:27017"
+  data-generator:
+    build: "data-generator/"
+    depends_on:
+      - mongodb
+    restart: "always"
   backend:
-    build: "./backend"
-    command: "python -u run.py"
+    build: "backend/"
+    depends_on:
+      - mongodb
+    restart: "always"
+
     ports:
-      - "5000:5000"
-    volumes:
-      - ".:/app"
-    links:
-      - "db"
-  db:
-    build: "./db"
-    image: "mongo:latest"
-    hostname: "mongo"
-    command: >
-      sh -c "python manage.py migrate
-      && python manage.py collectstatic --noinput
-      && python manage.py runserver 0.0.0.0:8000"  # !!!
-    ports:
-      - 27017:27017
+      - "8080:8080"
+  

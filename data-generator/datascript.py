@@ -1,4 +1,3 @@
-import json
 import requests
 import random
 import datetime
@@ -6,11 +5,11 @@ import time
 
 from pymongo import MongoClient
 
-from app.config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE, MONGO_NUMBER_DAY,\
-MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
+from config import MONGO_NUMBER_AUTHOR, MONGO_NUMBER_PAGE, \
+    MONGO_DATABASE, MONGO_COLLECTION, MONGO_HOST, MONGO_PORT, API_FISH_TEXT, API_NAME
 
 
-def name_generator(number_author:int, api_name:str) -> str:
+def name_generator(number_author: int, api_name: str) -> str:
     """[summary]
 
     Args:
@@ -21,10 +20,10 @@ def name_generator(number_author:int, api_name:str) -> str:
         str: [description]
     """
     names = [requests.get(url=api_name).json()['name'] for _ in range(number_author)]
-    
     return names
 
-def text_generator(api_text:str):
+
+def text_generator(api_text: str):
     """[summary]
 
     Args:
@@ -35,7 +34,8 @@ def text_generator(api_text:str):
     """
     return requests.get(url=api_text).json()['text']
 
-def date_generator(number_page:int) -> list:
+
+def date_generator(number_page: int) -> list:
     """[summary]
 
     Args:
@@ -45,15 +45,16 @@ def date_generator(number_page:int) -> list:
         list: [description]
     """
     # datetime.date.today() - datetime.timedelta(DEFAULT_TIMEDELTA)
-
-    result = [int(time.mktime((datetime.datetime.today()
-                               -datetime.timedelta(days=random.randint(a=1, b=i+1)*random.randint(a=1, b=i+1))).timetuple()))
-              for i in range(number_page)]
-
+    result = [
+        int(
+            time.mktime(
+                (datetime.datetime.today()-datetime.timedelta(
+                    days=random.randint(a=1, b=i+1)*random.randint(a=1, b=i+1))).timetuple()))
+        for i in range(number_page)]
     return result
 
 
-def generation(number_author:int, number_page:int, api_name:str, api_text:str) -> dict:
+def generation(number_author: int, number_page: int, api_name: str, api_text: str) -> dict:
     """[summary]
 
     Args:
@@ -73,32 +74,33 @@ def generation(number_author:int, number_page:int, api_name:str, api_text:str) -
     for _ in range(number_page):
         name = names[random.randint(a=0, b=number_author-1)]
         yield dict(author=name, text=text_generator(api_text=api_text),
-                               datecreate=date[random.randint(a=0, b=number_page-1)])
-        
+                   datecreate=date[random.randint(a=0, b=number_page-1)])
+
+
+def create_utc(unixdatetime):
+    utcdatetime = time.localtime(unixdatetime)
+    return '{d}.{m}.{Y}'.format(d=utcdatetime.tm_mday, m=utcdatetime.tm_mon, Y=utcdatetime.tm_year)
+
+
 def db_start():
     """[summary]
     """
-    print('start create db')
     client = MongoClient(host=MONGO_HOST, port=MONGO_PORT)
     db = client[MONGO_DATABASE]
     series_collection = db[MONGO_COLLECTION]
 
     # data = [{'author': 'Sasha', 'text':'yes'}, {'author': 'Sasha1', 'text':'yes1'}]
-    series_collection.drop() # Это нужно только тут, те убрать в контейнере !!!!!
     data = [i for i in
-            generation(number_author=MONGO_NUMBER_AUTHOR, number_page=MONGO_NUMBER_PAGE, api_name=API_NAME, api_text=API_FISH_TEXT)]
+            generation(number_author=MONGO_NUMBER_AUTHOR,
+                       number_page=MONGO_NUMBER_PAGE, api_name=API_NAME, api_text=API_FISH_TEXT)]
     series_collection.insert_many(data)
-    print('end create db')
-    
-def create_utc(unixdatetime):
-        """
-            Converts unix date to utc and returns as a string
-        """
-        utcdatetime = time.localtime(unixdatetime)
-        # There are different time formats: UTC, unix, GMT
-        return '{d}.{m}.{Y}'.format(d=utcdatetime.tm_mday, m=utcdatetime.tm_mon, Y=utcdatetime.tm_year)
+
 
 def main():
-    pass
+    print('[Start of data creation]')
+    db_start()
+    print('[End of data creation]')
+
+
 if __name__ == '__main__':
     main()
